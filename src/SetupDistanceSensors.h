@@ -1,5 +1,4 @@
 #include "Adafruit_VL53L0X.h"
-#include "SetupNeopixel.h"
 
 // Distancia de referencia en mm
 #define DISTANCE 50
@@ -46,9 +45,6 @@ void setID()
   pinMode(SHT_LOX2, OUTPUT);
   pinMode(SHT_LOX3, OUTPUT);
   pinMode(SHT_LOX4, OUTPUT);
-
-  // Serial.println(F("All in reset mode...(pins are low)"));
-  // Serial.println(F("Starting..."));
   // Todos los sensores se reinician
   digitalWrite(SHT_LOX1, LOW);
   digitalWrite(SHT_LOX2, LOW);
@@ -61,51 +57,45 @@ void setID()
   digitalWrite(SHT_LOX3, HIGH);
   digitalWrite(SHT_LOX4, HIGH);
   delay(10);
-
   // Activando LOX1 y reiniciando LOX2 LOX3 y LOX4
   digitalWrite(SHT_LOX1, HIGH);
   digitalWrite(SHT_LOX2, LOW);
   digitalWrite(SHT_LOX3, LOW);
   digitalWrite(SHT_LOX4, LOW);
 
-  // Iniciando LOX1
+  // ***************** Iniciando LOX1 ****************** //
   if (!lox1.begin(LOX1_ADDRESS))
   {
-    // Serial.println(F("Failed to boot first VL53L0X"));
     while (1)
       ;
   }
   delay(10);
-
   // Activando LOX2
   digitalWrite(SHT_LOX2, HIGH);
   delay(10);
 
-  // Iniciando LOX2
+  // ***************** Iniciando LOX2 ****************** //
   if (!lox2.begin(LOX2_ADDRESS))
   {
-    // Serial.println(F("Failed to boot second VL53L0X"));
     while (1)
       ;
   }
-
   // Activando LOX3
   digitalWrite(SHT_LOX3, HIGH);
   delay(10);
 
-  // Iniciando LOX3
+  // ***************** Iniciando LOX3 ****************** //
   if (!lox3.begin(LOX3_ADDRESS))
   {
     // Serial.println(F("Failed to boot third VL53L0X"));
     while (1)
       ;
   }
-
   // Activando LOX4
   digitalWrite(SHT_LOX4, HIGH);
   delay(10);
 
-  // Iniciando LOX4
+  // ***************** Iniciando LOX4 ****************** //
   if (!lox4.begin(LOX4_ADDRESS))
   {
     // Serial.println(F("Failed to boot fourth VL53L0X"));

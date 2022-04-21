@@ -1,22 +1,71 @@
 #include <Arduino.h>
 #include <SetupPWM.h>
 #include <SetupDistanceSensors.h>
+#include "BluetoothSerial.h"
+
+BluetoothSerial SerialBT;
+TaskHandle_t Task1;
 
 void readAllSensors();
+void Task1code(void *pvParameters);
 
 void setup()
 {
   disableCore1WDT();
+  disableCore0WDT();
 
-  strip.Begin();
-  strip.Show();
+  SerialBT.begin("ESP32test");
 
-  setID();
+  xTaskCreatePinnedToCore(
+      Task1code, /* Task function. */
+      "Task1",   /* name of task. */
+      10000,     /* Stack size of task */
+      NULL,      /* parameter of the task */
+      1,         /* priority of the task */
+      &Task1,    /* Task handle to keep track of created task */
+      0);        /* pin task to core 0 */
+
+  setupInputsDriver();
+  setupPWM();
 }
 
 void loop()
 {
-  readAllSensors();
+  if (SerialBT.available())
+  {
+    char myChar = SerialBT.read();
+    switch (myChar)
+    {
+    case 'U':
+      forwardDirection();
+      break;
+    case 'D':
+      backwardDirection();
+      break;
+    case 'L':
+      leftDirection();
+      break;
+    case 'R':
+      rightDirection();
+      break;
+    case 'S':
+      stopEmergency();
+      break;
+    default:
+      stopEmergency();
+      break;
+    }
+  }
+  // testingPWM();
+}
+
+void Task1code(void *pvParameters)
+{
+  setID();
+  for (;;)
+  {
+    readAllSensors();
+  }
 }
 
 void readAllSensors()
@@ -32,26 +81,24 @@ void readAllSensors()
     lox1_distance = measure1.RangeMilliMeter;
     if (lox1_distance < DISTANCE)
     {
-      flagPwmMotor1 = true;
+      flagPwmEnableA = true;
     }
     else
     {
-      flagPwmMotor1 = false;
+      flagPwmEnableA = false;
     }
     if (lox1_distance < DISTANCE && flag1_distance == false)
     {
-      highPixels1();
+      stopEmergency();
       flag1_distance = true;
     }
     else
     {
-      lowPixels1();
       flag1_distance = false;
     }
   }
   else
   {
-    lowPixels1();
     flag1_distance = false;
   }
 
@@ -61,26 +108,24 @@ void readAllSensors()
     lox2_distance = measure2.RangeMilliMeter;
     if (lox2_distance < DISTANCE)
     {
-      flagPwmMotor2 = true;
+      flagPwmEnableB = true;
     }
     else
     {
-      flagPwmMotor2 = false;
+      flagPwmEnableB = false;
     }
     if (lox2_distance < DISTANCE && flag2_distance == false)
     {
-      highPixels2();
+      stopEmergency();
       flag2_distance = true;
     }
     else
     {
-      lowPixels2();
       flag2_distance = false;
     }
   }
   else
   {
-    lowPixels2();
     flag2_distance = false;
   }
 
@@ -90,26 +135,24 @@ void readAllSensors()
     lox3_distance = measure3.RangeMilliMeter;
     if (lox3_distance < DISTANCE)
     {
-      flagPwmMotor3 = true;
+      flagPwmEnableC = true;
     }
     else
     {
-      flagPwmMotor3 = false;
+      flagPwmEnableC = false;
     }
     if (lox3_distance < DISTANCE && flag3_distance == false)
     {
-      highPixels3();
+      stopEmergency();
       flag3_distance = true;
     }
     else
     {
-      lowPixels3();
       flag3_distance = false;
     }
   }
   else
   {
-    lowPixels3();
     flag3_distance = false;
   }
 
@@ -119,26 +162,24 @@ void readAllSensors()
     lox4_distance = measure4.RangeMilliMeter;
     if (lox4_distance < DISTANCE)
     {
-      flagPwmMotor4 = true;
+      flagPwmEnableD = true;
     }
     else
     {
-      flagPwmMotor4 = false;
+      flagPwmEnableD = false;
     }
     if (lox4_distance < DISTANCE && flag4_distance == false)
     {
-      highPixels4();
+      stopEmergency();
       flag4_distance = true;
     }
     else
     {
-      lowPixels4();
       flag4_distance = false;
     }
   }
   else
   {
-    lowPixels4();
     flag4_distance = false;
   }
 }
