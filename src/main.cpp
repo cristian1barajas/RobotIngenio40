@@ -3,18 +3,26 @@
 #include <SetupDistanceSensors.h>
 #include "BluetoothSerial.h"
 
+#define MAX_CHARS 3
+
+char charVector[MAX_CHARS];
+int charIndex = 0;
+bool isReading = false;
+
+String stringPWM = "";
+
 BluetoothSerial SerialBT;
 TaskHandle_t Task1;
 
 void readAllSensors();
 void Task1code(void *pvParameters);
+void validationPWM();
 
 void setup()
 {
   disableCore1WDT();
   disableCore0WDT();
-
-  SerialBT.begin("ESP32test");
+  SerialBT.begin("Bot2.0");
 
   xTaskCreatePinnedToCore(
       Task1code, /* Task function. */
@@ -27,6 +35,10 @@ void setup()
 
   setupInputsDriver();
   setupPWM();
+
+  Serial.begin(9600);
+  Serial.setTimeout(1);
+  Serial.println("Iniciando Bot");
 }
 
 void loop()
@@ -34,6 +46,29 @@ void loop()
   if (SerialBT.available())
   {
     char myChar = SerialBT.read();
+    if (myChar == '#')
+    {
+      isReading = !isReading;
+      charIndex = 0;
+    }
+    else if (isReading && charIndex < MAX_CHARS)
+    {
+      charVector[charIndex] = myChar;
+      charIndex++;
+    }
+
+    if (myChar == '#' && !isReading)
+    {
+      for (int i = 0; i < MAX_CHARS; i++)
+      {
+        stringPWM = stringPWM + charVector[i];
+        charVector[i] = 0;
+      }
+      valuePWM = stringPWM.toInt();
+      Serial.println(stringPWM.toInt());
+      stringPWM = "";
+    }
+
     switch (myChar)
     {
     case 'U':
@@ -49,6 +84,9 @@ void loop()
       rightDirection();
       break;
     case 'S':
+      stopSlowly();
+      break;
+    case 'X':
       stopEmergency();
       break;
     default:
@@ -56,15 +94,14 @@ void loop()
       break;
     }
   }
-  // testingPWM();
 }
 
 void Task1code(void *pvParameters)
 {
-  setID();
+  // setID();
   for (;;)
   {
-    readAllSensors();
+    // readAllSensors();
   }
 }
 

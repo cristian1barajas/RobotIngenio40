@@ -24,6 +24,8 @@ bool flagPwmEnableB = false;
 bool flagPwmEnableC = false;
 bool flagPwmEnableD = false;
 
+int valuePWM = 100;
+
 void setupPWM() {
   ledcSetup(pwmChannel0, freq, resolution);
   ledcSetup(pwmChannel1, freq, resolution);
@@ -59,8 +61,9 @@ void forwardDirection() {
   digitalWrite(INPUT_3, HIGH);
   digitalWrite(INPUT_5, HIGH);
   digitalWrite(INPUT_7, HIGH);
-  for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle++)
+  for (int dutyCycle = 0; dutyCycle <= valuePWM; dutyCycle++)
     {
+      delayMicroseconds(10);
       ledcWrite(pwmChannel0, dutyCycle);
       ledcWrite(pwmChannel1, dutyCycle);
       ledcWrite(pwmChannel2, dutyCycle);
@@ -73,8 +76,9 @@ void backwardDirection() {
   digitalWrite(INPUT_4, HIGH);
   digitalWrite(INPUT_6, HIGH);
   digitalWrite(INPUT_8, HIGH);
-  for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle++)
+  for (int dutyCycle = 0; dutyCycle <= valuePWM; dutyCycle++)
     {
+      delayMicroseconds(10);
       ledcWrite(pwmChannel0, dutyCycle);
       ledcWrite(pwmChannel1, dutyCycle);
       ledcWrite(pwmChannel2, dutyCycle);
@@ -83,16 +87,42 @@ void backwardDirection() {
 }
 
 void leftDirection() {
-
+  digitalWrite(INPUT_1, HIGH);
+  digitalWrite(INPUT_3, HIGH);
+  digitalWrite(INPUT_6, HIGH);
+  digitalWrite(INPUT_8, HIGH);
+  for (int dutyCycle = 0; dutyCycle <= valuePWM; dutyCycle++)
+    {
+      delayMicroseconds(10);
+      ledcWrite(pwmChannel0, dutyCycle);
+      ledcWrite(pwmChannel1, dutyCycle);
+      ledcWrite(pwmChannel2, dutyCycle);
+      ledcWrite(pwmChannel3, dutyCycle);
+    }
 }
 
 void rightDirection() {
-
+  digitalWrite(INPUT_2, HIGH);
+  digitalWrite(INPUT_4, HIGH);
+  digitalWrite(INPUT_5, HIGH);
+  digitalWrite(INPUT_7, HIGH);
+  for (int dutyCycle = 0; dutyCycle <= valuePWM; dutyCycle++)
+    {
+      delayMicroseconds(10);
+      ledcWrite(pwmChannel0, dutyCycle);
+      ledcWrite(pwmChannel1, dutyCycle);
+      ledcWrite(pwmChannel2, dutyCycle);
+      ledcWrite(pwmChannel3, dutyCycle);
+    }
 }
 
-void stopEmergency() {
-  for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--)
+void stopSlowly() {
+  for (int dutyCycle = valuePWM; dutyCycle >= 0; dutyCycle--)
     {
+      delayMicroseconds(10);
+      ledcWrite(pwmChannel0, dutyCycle);
+      ledcWrite(pwmChannel1, dutyCycle);
+      ledcWrite(pwmChannel2, dutyCycle);
       ledcWrite(pwmChannel3, dutyCycle);
     }
   digitalWrite(INPUT_1, LOW);
@@ -105,7 +135,17 @@ void stopEmergency() {
   digitalWrite(INPUT_8, LOW);
 }
 
-void testingPWM() {
-  
-    
+void stopEmergency() {
+  digitalWrite(INPUT_1, LOW);
+  digitalWrite(INPUT_2, LOW);
+  digitalWrite(INPUT_3, LOW);
+  digitalWrite(INPUT_4, LOW);
+  digitalWrite(INPUT_5, LOW);
+  digitalWrite(INPUT_6, LOW);
+  digitalWrite(INPUT_7, LOW);
+  digitalWrite(INPUT_8, LOW);
+  ledcWrite(pwmChannel0, 0);
+  ledcWrite(pwmChannel1, 0);
+  ledcWrite(pwmChannel2, 0);
+  ledcWrite(pwmChannel3, 0);
 }
