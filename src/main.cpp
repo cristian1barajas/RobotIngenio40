@@ -8,6 +8,7 @@
 char charVector[MAX_CHARS];
 int charIndex = 0;
 bool isReading = false;
+char myChar;
 
 String stringPWM = "";
 
@@ -22,7 +23,7 @@ void setup()
 {
   disableCore1WDT();
   disableCore0WDT();
-  SerialBT.begin("Bot2.0");
+  SerialBT.begin("Bot3.0");
 
   xTaskCreatePinnedToCore(
       Task1code, /* Task function. */
@@ -36,17 +37,16 @@ void setup()
   setupInputsDriver();
   setupPWM();
 
-  Serial.begin(9600);
-  Serial.setTimeout(1);
-  Serial.println("Iniciando Bot");
+  // Serial.begin(9600);
+  // Serial.println("Iniciando Bot");
 }
 
 void loop()
 {
   if (SerialBT.available())
   {
-    char myChar = SerialBT.read();
-    if (myChar == '#')
+    myChar = SerialBT.read();
+    if (myChar == '#') // "60"
     {
       isReading = !isReading;
       charIndex = 0;
@@ -98,10 +98,10 @@ void loop()
 
 void Task1code(void *pvParameters)
 {
-  // setID();
+  setID();
   for (;;)
   {
-    // readAllSensors();
+    readAllSensors();
   }
 }
 
@@ -116,54 +116,46 @@ void readAllSensors()
   if (measure1.RangeStatus != 4)
   {
     lox1_distance = measure1.RangeMilliMeter;
-    if (lox1_distance < DISTANCE)
+
+    if (lox1_distance < DISTANCE && flag1_distance == false && myChar == 'U')
     {
-      flagPwmEnableA = true;
-    }
-    else
-    {
-      flagPwmEnableA = false;
-    }
-    if (lox1_distance < DISTANCE && flag1_distance == false)
-    {
-      stopEmergency();
+      stopEmergencyBreakForward();
       flag1_distance = true;
     }
-    else
+
+    if (lox1_distance < DISTANCE && flag1_distance == false && myChar == 'S')
+    {
+      stopEmergencyBreakForwardLow();
+      flag1_distance = true;
+    }
+
+    if (lox1_distance > DISTANCE)
     {
       flag1_distance = false;
     }
-  }
-  else
-  {
-    flag1_distance = false;
   }
 
   // ******************************* Sensor 2 ***************************** //
   if (measure2.RangeStatus != 4)
   {
     lox2_distance = measure2.RangeMilliMeter;
-    if (lox2_distance < DISTANCE)
+
+    if (lox2_distance < DISTANCE && flag2_distance == false && myChar == 'D')
     {
-      flagPwmEnableB = true;
-    }
-    else
-    {
-      flagPwmEnableB = false;
-    }
-    if (lox2_distance < DISTANCE && flag2_distance == false)
-    {
-      stopEmergency();
+      stopEmergencyBreakBackward();
       flag2_distance = true;
     }
-    else
+
+    if (lox2_distance < DISTANCE && flag2_distance == false && myChar == 'S')
+    {
+      stopEmergencyBreakBackwardLow();
+      flag2_distance = true;
+    }
+
+    if (lox2_distance > DISTANCE)
     {
       flag2_distance = false;
     }
-  }
-  else
-  {
-    flag2_distance = false;
   }
 
   // ******************************* Sensor 3 ***************************** //
@@ -219,4 +211,6 @@ void readAllSensors()
   {
     flag4_distance = false;
   }
+
+  // Serial.println("A: " + String(lox1_distance) + " B: " + String(lox2_distance) + " C: " + String(lox3_distance) + " D: " + String(lox4_distance));
 }
