@@ -24,7 +24,7 @@ bool flagPwmEnableB = false;
 bool flagPwmEnableC = false;
 bool flagPwmEnableD = false;
 
-int valuePWM = 100;
+int valuePWM = 240;
 
 void setupPWM() {
   ledcSetup(pwmChannel0, freq, resolution);
@@ -58,9 +58,13 @@ void setupInputsDriver() {
 
 void forwardDirection() {
   digitalWrite(INPUT_1, HIGH);
+  digitalWrite(INPUT_2, LOW);
   digitalWrite(INPUT_3, HIGH);
+  digitalWrite(INPUT_4, LOW);
   digitalWrite(INPUT_5, HIGH);
+  digitalWrite(INPUT_6, LOW);
   digitalWrite(INPUT_7, HIGH);
+  digitalWrite(INPUT_8, LOW);
   for (int dutyCycle = 0; dutyCycle <= valuePWM; dutyCycle++)
     {
       delayMicroseconds(10);
@@ -72,9 +76,13 @@ void forwardDirection() {
 }
 
 void backwardDirection() {
+  digitalWrite(INPUT_1, LOW);
   digitalWrite(INPUT_2, HIGH);
+  digitalWrite(INPUT_3, LOW);
   digitalWrite(INPUT_4, HIGH);
+  digitalWrite(INPUT_5, LOW);
   digitalWrite(INPUT_6, HIGH);
+  digitalWrite(INPUT_7, LOW);
   digitalWrite(INPUT_8, HIGH);
   for (int dutyCycle = 0; dutyCycle <= valuePWM; dutyCycle++)
     {
@@ -148,4 +156,28 @@ void stopEmergency() {
   ledcWrite(pwmChannel1, 0);
   ledcWrite(pwmChannel2, 0);
   ledcWrite(pwmChannel3, 0);
+}
+
+void stopEmergencyBreakForward() {
+  backwardDirection();
+  delay(250);
+  stopEmergency();
+}
+
+void stopEmergencyBreakBackward() {
+  forwardDirection();
+  delay(250);
+  stopEmergency();
+}
+
+void stopEmergencyBreakForwardLow() {
+  backwardDirection();
+  delay(100);
+  stopEmergency();
+}
+
+void stopEmergencyBreakBackwardLow() {
+  forwardDirection();
+  delay(100);
+  stopEmergency();
 }

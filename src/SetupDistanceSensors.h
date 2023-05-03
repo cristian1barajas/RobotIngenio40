@@ -1,7 +1,7 @@
 #include "Adafruit_VL53L0X.h"
 
 // Distancia de referencia en mm
-#define DISTANCE 50
+#define DISTANCE 100
 
 // Direcciones I2C para sensores presentes
 #define LOX1_ADDRESS 0x30
@@ -10,10 +10,10 @@
 #define LOX4_ADDRESS 0x33
 
 // Ajuste de pines shutdown
-#define SHT_LOX1 15
-#define SHT_LOX2 2
-#define SHT_LOX3 4
-#define SHT_LOX4 16
+#define SHT_LOX4 15
+#define SHT_LOX3 2
+#define SHT_LOX2 4
+#define SHT_LOX1 16
 
 // Objetos vl53l0x
 Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
@@ -66,6 +66,7 @@ void setID()
   // ***************** Iniciando LOX1 ****************** //
   if (!lox1.begin(LOX1_ADDRESS))
   {
+    //Serial.println(F("Failed to boot first VL53L0X"));
     while (1)
       ;
   }
@@ -77,6 +78,7 @@ void setID()
   // ***************** Iniciando LOX2 ****************** //
   if (!lox2.begin(LOX2_ADDRESS))
   {
+    //Serial.println(F("Failed to boot second VL53L0X"));
     while (1)
       ;
   }
@@ -87,7 +89,7 @@ void setID()
   // ***************** Iniciando LOX3 ****************** //
   if (!lox3.begin(LOX3_ADDRESS))
   {
-    // Serial.println(F("Failed to boot third VL53L0X"));
+    //Serial.println(F("Failed to boot third VL53L0X"));
     while (1)
       ;
   }
@@ -98,7 +100,7 @@ void setID()
   // ***************** Iniciando LOX4 ****************** //
   if (!lox4.begin(LOX4_ADDRESS))
   {
-    // Serial.println(F("Failed to boot fourth VL53L0X"));
+    //Serial.println(F("Failed to boot fourth VL53L0X"));
     while (1)
       ;
   }
